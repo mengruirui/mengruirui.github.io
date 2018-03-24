@@ -53,23 +53,26 @@
   </entry>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2018/03/23/hello-world/"/>
-    <id>http://yoursite.com/2018/03/23/hello-world/</id>
-    <published>2018-03-23T05:30:20.000Z</published>
-    <updated>2018-03-23T05:30:20.000Z</updated>
+    <title>iPhone X 屏幕适配，没有铺满屏幕的情况</title>
+    <link href="http://yoursite.com/2017/09/20/iPhone%20X%20%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%EF%BC%8C%E6%B2%A1%E6%9C%89%E9%93%BA%E6%BB%A1%E5%B1%8F%E5%B9%95%E7%9A%84%E6%83%85%E5%86%B5/"/>
+    <id>http://yoursite.com/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/</id>
+    <published>2017-09-20T06:00:14.000Z</published>
+    <updated>2018-03-24T15:07:59.740Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<p>今天在适配iPhone X的时候，发现iPhone X的屏幕上下没有铺满。新建的项目，以及写的Demo都是铺满屏幕的。</p><p><img src="/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/images/1463570-f79d80f2215fd3df.png.jpeg" alt=""></p><p>经过反复查看项目后，发现原来是很久以前，项目因为启动页用的是Launch Image Source,而用不到Launch Screen File 所以把LaunchScreen.storyboard 给删除了，Info.plist 里面也就没有了 Launch screen interface file base name 。</p><a id="more"></a><p>解决方法是，在Info.plist 里面增加  Launch screen interface file base name 就可以了。</p><p>注意：只是增加一个 key。Launch screen interface file base name</p><p>如果增加了key，还是不行的话，添加一张iPhone X屏幕分辨率的启动图也能达到一样的效果。</p><p><img src="/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/images/1463570-444c8cb57e883c57.png.jpeg" alt=""></p><p>增加完的效果是，我们要注意的是，在iPhone X 里面，状态栏是不能隐藏的。如果隐藏了，会挡住界面，需要自己再去做适配。</p><p><img src="/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/images/1463570-daeae66fb1f438aa.png.jpeg" alt=""></p><p>付一张启动页的图，需要的可以先试试。</p><p><img src="/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/images/1463570-a30a07c2a45b888f.jpg.png" alt=""></p>]]></content>
     
     <summary type="html">
     
-      
-      
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
-      
+      &lt;p&gt;今天在适配iPhone X的时候，发现iPhone X的屏幕上下没有铺满。新建的项目，以及写的Demo都是铺满屏幕的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/images/1463570-f79d80f2215fd3df.png.jpeg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;经过反复查看项目后，发现原来是很久以前，项目因为启动页用的是Launch Image Source,而用不到Launch Screen File 所以把LaunchScreen.storyboard 给删除了，Info.plist 里面也就没有了 Launch screen interface file base name 。&lt;/p&gt;
     
     </summary>
     
+      <category term="开发" scheme="http://yoursite.com/categories/%E5%BC%80%E5%8F%91/"/>
+    
+    
+      <category term="iOS" scheme="http://yoursite.com/tags/iOS/"/>
     
   </entry>
   

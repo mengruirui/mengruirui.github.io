@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="iOS,Objective - c,转载," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Mengrr's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="相等的概念是探究哲学和数学的核心，并且对道德、公正和公共政策的问题有着深远的影响。 从一个经验主义者的角度来看，两个物体不能依据一些观测标准中分辨出来，它们就是相等的。在人文方面，平等主义者认为相等意味着要保持每个人的社会、经济、政治和他们住地的司法系统都一致。">
+<meta name="keywords" content="iOS,Objective - c,转载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS判断对象相等 重写isEqual、isEqualToClass、hash">
+<meta property="og:url" content="http://yoursite.com/2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/index.html">
+<meta property="og:site_name" content="Mengrr&#39;s Blog">
+<meta property="og:description" content="相等的概念是探究哲学和数学的核心，并且对道德、公正和公共政策的问题有着深远的影响。 从一个经验主义者的角度来看，两个物体不能依据一些观测标准中分辨出来，它们就是相等的。在人文方面，平等主义者认为相等意味着要保持每个人的社会、经济、政治和他们住地的司法系统都一致。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-25T01:53:49.017Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS判断对象相等 重写isEqual、isEqualToClass、hash">
+<meta name="twitter:description" content="相等的概念是探究哲学和数学的核心，并且对道德、公正和公共政策的问题有着深远的影响。 从一个经验主义者的角度来看，两个物体不能依据一些观测标准中分辨出来，它们就是相等的。在人文方面，平等主义者认为相等意味着要保持每个人的社会、经济、政治和他们住地的司法系统都一致。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '假装狠心的自己'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/"/>
+
+
+
+
+
+  <title>iOS判断对象相等 重写isEqual、isEqualToClass、hash | Mengrr's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+
+    <a href="https://github.com/mengruirui"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mengrr's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孟瑞瑞">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/headImg.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mengrr's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS判断对象相等 重写isEqual、isEqualToClass、hash</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-16T14:14:00+08:00">
+                2017-11-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发/" itemprop="url" rel="index">
+                    <span itemprop="name">开发</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/开发/iOS/Objective-c/" itemprop="url" rel="index">
+                    <span itemprop="name">Objective - c</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览次数：
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p> 相等的概念是探究哲学和数学的核心，并且对道德、公正和公共政策的问题有着深远的影响。</p>
+<p>从一个经验主义者的角度来看，两个物体不能依据一些观测标准中分辨出来，它们就是相等的。在人文方面，平等主义者认为相等意味着要保持每个人的社会、经济、政治和他们住地的司法系统都一致。</p>
+<a id="more"></a>
+<p>对程序员来说，协调好逻辑和感官能力来理解我们塑造的’相同’的语义是一项任务。’相同的问题’(的探讨)太微妙，同时有太容易被忽视。对语义没有充分的理解就直接去实现它，可能会导致没必要的工作和不正确的结果。因此对数学和逻辑系统的深刻理解与按既定计划实现同样必要。</p>
+<p>虽然所有的技术博文都是有诱惑你来读它的标题和代码，但请花几分钟时间来阅读和理解这些文字。逐字地复制看似有用的代码而不知道为什么这样写很有可能导致一些错误。相等性是个重要话题之一，但它仍包含了许多混乱的概念，尤其是在Objective-C中。</p>
+<h2 id="Equality-amp-Identity"><a href="#Equality-amp-Identity" class="headerlink" title="Equality &amp; Identity"></a>Equality &amp; Identity</h2><p> 首先，弄清楚equality和identity的区别很重要。</p>
+<p>如果两个物体具有相同的观测属性，它们是可以相互等同的。但是，这两个对象仍然可以分辨出差异，它们各自的identity。在程序中，一个对象的identity是和它的内存地址关联的。</p>
+<p>NSObject对象测试和另一个对象是否相同使用isEqual:方法，在它的基本实现里性等性检查本质上是对identity的检查，如果两个对象指向了相同的内存地址，它们被认为是相等的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@implementation NSObject(Approximate)</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqual:(id)object &#123;</span><br><span class="line"></span><br><span class="line">return self== object;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>对于内置的类，像NSArray, NSDictionary, 和 NSString，进行了一个深层的相等性比较，来测试在集合中的每个元素是否相等，这是一个应该也确实非常有用的做法。</p>
+<p>NSObject 的子类要实现它们各自的isEqual:方法时，应该做到以下几点：</p>
+<ul>
+<li><p>1.实现一个isEqualTo__ClassName__:方法来执行有意义的值比较.</p>
+</li>
+<li><p>2.重写isEqual:方法 来作类型和对象identity检查, 回调上述的值比较方法.</p>
+</li>
+<li><p>3.重写 hash, 这个会在下一部分解释.</p>
+</li>
+<li><p>这里有一个NSArray实现这个的大概的思路(这个例子忽略了类簇, 实际实现会更具体复杂):</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@implementation NSArray(Approximate)</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqualToArray:(NSArray*)array &#123;</span><br><span class="line"></span><br><span class="line">if(!array || [selfcount] != [array count]) &#123;</span><br><span class="line"></span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for(NSUIntegeridx =0; idx &lt; [array count]; idx++) &#123;</span><br><span class="line"></span><br><span class="line">if(![self[idx] isEqual:array[idx]]) &#123;</span><br><span class="line"></span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqual:(id)object &#123;</span><br><span class="line"></span><br><span class="line">if(self== object) &#123;</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(![object isKindOfClass:[NSArrayclass]]) &#123;</span><br><span class="line"></span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return [selfisEqualToArray:(NSArray*)object];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>下面的在Foudation中NSObject的子类已经自定义了判等实现，用了相关的方法：</p>
+<p><code>NSAttributedString-isEqualToAttributedString:</code><br><code>NSData-isEqualToData:NSDate-isEqualToDate:</code><br><code>NSDictionary-isEqualToDictionary:</code><br><code>NSHashTable-isEqualToHashTable:</code><br><code>NSIndexSet-isEqualToIndexSet:</code><br><code>NSNumber-isEqualToNumber:</code><br><code>NSOrderedSet-isEqualToOrderedSet:</code><br><code>NSSet-isEqualToSet:</code><br><code>NSString-isEqualToString:</code><br><code>NSTimeZone-isEqualToTimeZone:</code><br><code>NSValue-isEqualToValue:</code></p>
+<p>当比较任何这些类的两个实例时，推荐使用它们各自的高级别的<code>method</code>而不是<code>isEqual:</code></p>
+<p>然而，我们的理论实现还没有完成，现在，让我们把注意力转向<code>hash</code>（一段插曲：先清理一下<code>NSString</code>的问题）。</p>
+<p><code>NSString</code>判等的奇怪案例</p>
+<p>一个有趣的插曲，看一下这个代码：</p>
+<p><code>NSString *a = @&quot;Hello&quot;;</code><br><code>NSString *b =@&quot;Hello&quot;;</code><br><code>BOOL wtf = (a == b);</code><br><code>// YES</code></p>
+<p>郑重地声明一下正确的比较两个<code>NSString</code>对象相等的方法是使用<code>-isEqualToString:</code>方法，无论如何也不能通过<code>==</code>操作符来比较两个<code>NSString</code>。</p>
+<p>那么这里是怎么回事呢？为什么 <code>NSArray</code>或者<code>NSDictionary</code>字面量相同不会这样，而它<code>(NSString)</code>会这样呢。</p>
+<p>这都是一种被称为字符串驻留的优化技术做的，因为这种优化不同的值可以对一份不可变的字符串值的备份进行拷贝。<code>NSString</code> 类型的a指针和b指针对驻留字符串 <code>@&quot;Hello&quot;</code>进行了相同的拷贝。注意这个优化仅仅对静态声明的不可变字符串有效。</p>
+<p>更有趣的是，<code>OC</code>的<code>selector</code>的名字也会被当做驻留字符串存储在一个共用的字符串<code>pool</code>中。</p>
+<h2 id="Hashing"><a href="#Hashing" class="headerlink" title="Hashing"></a>Hashing</h2><p>最日常的面向对象编程来说，对象判等最主要的用法在于决定集合成员。为了让这一步更快一些，自定义判等实现的类应该也实现hash:</p>
+<ul>
+<li><p>1.对象相等是相互的([a isEqual:b] ⇒ [b isEqual:a])</p>
+</li>
+<li><p>2.如果对象相等，它们的hash值必须相等([a isEqual:b] ⇒ [a hash] == [b hash])</p>
+<p>但是，反过来不一定成立：如果它们的hash值相等，两个对象不一定相等。([a hash] == [b hash] ¬⇒ [a isEqual:b])</p>
+</li>
+</ul>
+<p>现在快速翻看一下《计算机科学》101:</p>
+<p><code>hash</code>表式编程中的基本的数据结构，它可以使 <code>NSSet &amp; NSDictionary</code> 快速地(O(1))查找它的元素。</p>
+<p>我们也可以通过对比着数组很好地理解hash表：</p>
+<p><code>Arrays</code>按照有序的索引存储元素，因此一个大小为n的数组会把元素放在索引1，2直到n-1.为了确定数组中的一个元素存在了哪里，不得不一个个检查每个位置(除非数组碰巧已经排序好，但这是另一回事)。</p>
+<p>Hash表使用了略微不同的方法。而不是按顺序存储元素，<code>hash</code>表在内存中分配了n个位置，同时用一个函数来计算在这个范围内计算一个位置。一个<code>hash</code>函数是确定性的，同时一个好的<code>hash</code>函数使用一个相对均匀的散列来生成值，而且不会有太多的计算过程。当两个不同的对象计算出相同的hash值时，会产生<code>hash</code>冲突。当冲突发生时，<code>hash</code>表会寻找冲突点同时把新加的对象放到第一个可用的位置。当<code>hash</code>表变得越来越拥挤，冲突的可能性会增加，这会导致花费更多的时间来寻找空间(这就是为什么均匀散列的<code>hash</code>函数不菲的原因。)</p>
+<p>一个关于实现<code>hash</code>函数的错误共识来自于随之发生的断言，这个错误的共识认为<code>hash</code>值必须是不同的。这个错误共识会导致不必要地复杂实现，包括从<code>Java textbooks</code>复制过来的质数的神奇咒语。实际上，一个简单的对关键属性<code>hash</code>值的<code>XOR</code>(异或运算)对于99%的情况来说已经够用了。</p>
+<p>技巧就是思考对象中的哪个值是关键的。</p>
+<p>对 <code>NSDate</code> 来说，对参照日期的时间间隔已经够用了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@implementation NSDate(Approximate)</span><br><span class="line"></span><br><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line"></span><br><span class="line">return (NSUInteger) abs ( [self timeIntervalSinceReferenceDate] ) ;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 对UIColor来说，移位之后的RGB值是非常方便计算的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@implementation UIColor(Approximate)</span><br><span class="line"></span><br><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line"></span><br><span class="line">CGFloatred, green, blue;</span><br><span class="line"></span><br><span class="line">[selfgetRed:&amp;red green:&amp;green blue:&amp;blue alpha:nil];</span><br><span class="line"></span><br><span class="line">return ((NSUInteger)(red *255) &lt;&lt;16) + ((NSUInteger)(green *255) &lt;&lt;8) + (NSUInteger)(blue *255);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h2 id="在子类中实现-isEqual-和-hash"><a href="#在子类中实现-isEqual-和-hash" class="headerlink" title="在子类中实现 -isEqual: 和 hash"></a>在子类中实现 -isEqual: 和 hash</h2><p>综合在一起，这里有一个如何在子类重写默认的判等实现的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@interfacePerson</span><br><span class="line"></span><br><span class="line">@property NSString*name;</span><br><span class="line"></span><br><span class="line">@property NSDate*birthday;</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqualToPerson:(Person *)person;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementationPerson</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqualToPerson:(Person *)person &#123;</span><br><span class="line"></span><br><span class="line">if(!person) &#123;</span><br><span class="line"></span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">BOOL haveEqualNames = (!self.name &amp;&amp; !person.name) || [self.name  isEqualToString:person.name];</span><br><span class="line"></span><br><span class="line">BOOL haveEqualBirthdays = (!self.birthday &amp;&amp; !person.birthday) || [self.birthday isEqualToDate:person.birthday];</span><br><span class="line"></span><br><span class="line">return haveEqualNames &amp;&amp; haveEqualBirthdays;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - NSObject</span><br><span class="line"></span><br><span class="line">- (BOOL)isEqual:(id)object &#123;</span><br><span class="line"></span><br><span class="line">if(self== object) &#123;</span><br><span class="line"></span><br><span class="line">return YES;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(![object isKindOfClass:[Person class]]) &#123;</span><br><span class="line"></span><br><span class="line">return NO;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return [self isEqualToPerson:(Person *)object];</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSUInteger)hash &#123;</span><br><span class="line"></span><br><span class="line">return [self.name hash] ^ [self.birthday hash];</span><br><span class="line"></span><br><span class="line">&#125;@end</span><br></pre></td></tr></table></figure>
+<p> 如果想满足好奇心或者出于学究式的研究，看一下这个 <a href="https://mikeash.com/pyblog/friday-qa-2010-06-18-implementing-equality-and-hashing.html" target="_blank" rel="noopener">Mike Ash的文章</a>，解释了通过移位和翻转组合值如何改善了可能产生重叠(冲突)的hash.</p>
+<p>本文完全翻译自：<a href="http://nshipster.com/equality/" target="_blank" rel="noopener">http://nshipster.com/equality/</a></p>
+<p>本文转自 <a href="https://www.cnblogs.com/Mike-zh/p/5147041.html" target="_blank" rel="noopener">https://www.cnblogs.com/Mike-zh/p/5147041.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/Objective-c/" rel="tag"># Objective - c</a>
+          
+            <a href="/tags/转载/" rel="tag"># 转载</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/20/iPhone X 屏幕适配，没有铺满屏幕的情况/" rel="next" title="iPhone X 屏幕适配，没有铺满屏幕的情况">
+                <i class="fa fa-chevron-left"></i> iPhone X 屏幕适配，没有铺满屏幕的情况
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/28/iOS远程推送原理及实现过程/" rel="prev" title="iOS远程推送原理及实现过程">
+                iOS远程推送原理及实现过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/headImg.jpg"
+                alt="孟瑞瑞" />
+            
+              <p class="site-author-name" itemprop="name">孟瑞瑞</p>
+              <p class="site-description motion-element" itemprop="description">我行过许多地方的桥，看过许多次数的云,喝过许多种类的酒，却只爱过一个正当最好年龄的人。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/mengruirui" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://twitter.com/Mengrr" target="_blank" title="Twitter">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Twitter</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.facebook.com/mengruirui.water" target="_blank" title="Facebook">
+                      
+                        <i class="fa fa-fw fa-globe"></i>Facebook</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/mengrr0411" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-globe"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/mengrr0411" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/meng-rui-rui-97" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/8eda071c72cd" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Equality-amp-Identity"><span class="nav-number">1.</span> <span class="nav-text">Equality &amp; Identity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hashing"><span class="nav-number">2.</span> <span class="nav-text">Hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在子类中实现-isEqual-和-hash"><span class="nav-number">3.</span> <span class="nav-text">在子类中实现 -isEqual: 和 hash</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孟瑞瑞</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/';
+          this.page.identifier = '2017/11/16/iOS判断对象相等 重写isEqual、isEqualToClass、hash/';
+          this.page.title = 'iOS判断对象相等 重写isEqual、isEqualToClass、hash';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
